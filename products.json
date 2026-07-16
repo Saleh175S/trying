@@ -1,0 +1,21 @@
+[
+                {
+                id: 1,
+                name: "طبق طعام قطط من البلاستيك المعالج",
+                category: "cats",
+                size: "20*15cm",
+                storage: "70g",
+                code: "A1",
+                price: "35 EGP",
+                image: "https://cdn.salla.sa/aGvRX/dc766153-372f-4075-8a8a-f0c57387b227-989.16666666667x1000-duvI2R23uRHl8Emwc9NMMtfxrzlyd7PjSVvkLvmj.jpg"
+                },
+                {
+                id:2,
+                name:"طوق كلاب فاخر",
+                category:"dogs",
+                size: "55 cm",
+                code:"B1",
+                Price: "55 EGP",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvWLW4j9u8jm5pl8NGywhLJtpkp-HxMvrmiGCic83WVQ&s=10"
+                }
+                ]
