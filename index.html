@@ -85,82 +85,89 @@
     </div>
 
     <script>
-        var productsDb = [];
+    var productsDb = [];
 
-        function loadProductsFromJson() {
-            return fetch('products.json')
-                .then(response => response.json())
-                .then(data => {
-                    productsDb = data;
-                    console.log("Products Loaded Successfully");
-                })
-                .catch(error => {
-                    console.error("Error loading products:", error);
-                });
-        }
-
-        // نضمن تحميل المنتجات أولًا عند فتح الصفحة
-        window.onload = function() {
-            loadProductsFromJson();
-        };
-
-        function togglesidebar() {
-            var sidebar = document.getElementById("mysidebar");
-            var mainContent = document.getElementById("main");
-            if (sidebar.style.width === "250px") {
-                sidebar.style.width = "0";
-                mainContent.style.marginRight = "0";
-            } else {
-                sidebar.style.width = "250px";
-                mainContent.style.marginRight = "250px";
-            }
-        }
-
-        function showProducts(chosenCategory) {
-            var mainContent = document.getElementById("main");
-            
-            // للتأكد من أن البيانات محملة بالكامل قبل الفلترة
-            if (productsDb.length === 0) {
-                mainContent.innerHTML = "<p style='color: #666;'>جاري تحميل المنتجات، يرجى الانتظار ثانية واحدة...</p>";
-                loadProductsFromJson().then(() => {
-                    renderProductsList(chosenCategory);
-                });
-            } else {
-                renderProductsList(chosenCategory);
-            }
-        }
-
-        function renderProductsList(chosenCategory) {
-            var mainContent = document.getElementById("main");
-            var cardHtml = "";
-            for (var i = 0; i < productsDb.length; i++) {
-                if (productsDb[i].category === chosenCategory) {
-                    cardHtml += `<div onclick="goToProductPage(${i})" style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; width: 200px; text-align: center; background-color: #fff; margin: 10px; cursor: pointer;">`;
-                    cardHtml += `<img src="${productsDb[i].image}" style="width: 100%; height: 150px; object-fit: contain; border-radius: 4px;">`;
-                    cardHtml += `<h3 style="font-size: 18px; margin: 10px 0; color: #333;">${productsDb[i].name}</h3>`;
-                    cardHtml += `<p style="font-size: 14px; color: #666; margin: 5px 0;">الحجم :${productsDb[i].size}</p>`;
-                    if (productsDb[i].storage) {
-                        cardHtml += `<p style="font-size: 14px; color: #666; margin: 5px 0;">المساحة: ${productsDb[i].storage}</p>`;
-                    }
-                    if (productsDb[i].code) {
-                        cardHtml += `<p style="font-size: 14px; color: #666; margin: 5px 0;"> كود: ${productsDb[i].code}</p>`;
-                    }
-                    cardHtml += `<div style="font-size: 16px; font-weight: bold; color: #e44d26; margin-top: 10px;">${productsDb[i].price || '75 EPT'}</div>`;
-                    cardHtml += `</div>`;
+    function loadProductsFromJson() {
+        return fetch('products.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to load products.json");
                 }
-            }
-            
-            if (cardHtml === "") {
-                mainContent.innerHTML = "<p style='color: #666;'>لا توجد منتجات متوفرة في هذا القسم حاليًا.</p>";
-            } else {
-                mainContent.innerHTML = cardHtml;
-            }
-        }
+                return response.json();
+            })
+            .then(data => {
+                productsDb = data;
+                console.log("Success loading products");
+            })
+            .catch(error => {
+                console.error("Error details:", error);
+                document.getElementById("main").innerHTML = `<p style="color: red;">Error loading products</p>`;
+            });
+    }
 
-        function goToProductPage(index) {
-            window.location.href = "product.html?index=" + index;
+    window.onload = function() {
+        loadProductsFromJson();
+    };
+
+    function togglesidebar() {
+        var sidebar = document.getElementById("mysidebar");
+        var mainContent = document.getElementById("main");
+        if (sidebar.style.width === "250px") {
+            sidebar.style.width = "0";
+            mainContent.style.marginRight = "0";
+        } else {
+            sidebar.style.width = "250px";
+            mainContent.style.marginRight = "250px";
         }
-    </script>
+    }
+
+    function showProducts(chosenCategory) {
+        var mainContent = document.getElementById("main");
+        
+        if (productsDb.length === 0) {
+            mainContent.innerHTML = "<p style='color: #666;'>Loading...</p>";
+            loadProductsFromJson().then(() => {
+                if (productsDb.length > 0) {
+                    renderProductsList(chosenCategory);
+                }
+            });
+        } else {
+            renderProductsList(chosenCategory);
+        }
+    }
+
+    function renderProductsList(chosenCategory) {
+        var mainContent = document.getElementById("main");
+        var cardHtml = "";
+        for (var i = 0; i < productsDb.length; i++) {
+            if (productsDb[i].category === chosenCategory) {
+                cardHtml += `<div onclick="goToProductPage(${i})" style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; width: 200px; text-align: center; background-color: #fff; margin: 10px; cursor: pointer;">`;
+                cardHtml += `<img src="${productsDb[i].image}" style="width: 100%; height: 150px; object-fit: contain; border-radius: 4px;">`;
+                cardHtml += `<h3 style="font-size: 18px; margin: 10px 0; color: #333;">${productsDb[i].name}</h3>`;
+                cardHtml += `<p style="font-size: 14px; color: #666; margin: 5px 0;">الحجم :${productsDb[i].size}</p>`;
+                if (productsDb[i].storage) {
+                    cardHtml += `<p style="font-size: 14px; color: #666; margin: 5px 0;">المساحة: ${productsDb[i].storage}</p>`;
+                }
+                if (productsDb[i].code) {
+                    cardHtml += `<p style="font-size: 14px; color: #666; margin: 5px 0;"> كود: ${productsDb[i].code}</p>`;
+                }
+                cardHtml += `<div style="font-size: 16px; font-weight: bold; color: #e44d26; margin-top: 10px;">${productsDb[i].price || '75 EPT'}</div>`;
+                cardHtml += `</div>`;
+            }
+        }
+        
+        if (cardHtml === "") {
+            mainContent.innerHTML = "<p style='color: #666;'>لا توجد منتجات متوفرة</p>";
+        } else {
+            mainContent.innerHTML = cardHtml;
+        }
+    }
+
+    function goToProductPage(index) {
+        window.location.href = "product.html?index=" + index;
+    }
+</script>
+
 </body>
 
     </html>
