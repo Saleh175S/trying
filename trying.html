@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <title> Saleh </title>
+    <style>
+        #main {
+            min-height: calc(100vh - 120px);
+            background-image: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('./logo.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: contain;
+            background-attachment: scroll;
+            margin-top: 120px;
+            box-sizing: border-box;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        #main div {
+            background-color: rgba(255, 255, 255, 0.85) !important;
+            position: relative;
+            z-index: 2;
+        }
+
+        h1 {
+            background-color: pink;
+            margin: 0;
+            padding: 0 15px;
+            font-size: 32px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            height: 120px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+        }
+
+        h1 span {
+            display: inline-block;
+            line-height: normal;
+        }
+
+        .menu-btn {
+            font-size: 40px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: black;
+            position: fixed;
+            top: 35px;
+            right: 20px;
+            z-index: 15;
+        }
+
+        .product-card {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 8px;
+            width: 200px;
+            text-align: center;
+            background-color: #fff;
+            margin: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>
+        <span style="color: red;"> دكتور صالح </span>
+        <span style="color: black;"> - </span>
+        <span style="color: yellow;">Doctor Saleh </span>
+        <img src="./logo.png" style="height: 100%; width: auto; object-fit: contain; max-height: 120px;">
+    </h1>
+
+    <button onclick="togglesidebar()" class="menu-btn"> ☰ </button>
+
+    <div id="mysidebar" style="width: 0; position: fixed; top: 120px; right: 0; height: calc(100% - 120px); background-color: #111; overflow-x: hidden; transition: 0.5s; padding-top: 60px; z-index: 20;">
+        <a href="javascript:void(0)" onclick="togglesidebar()" style="position: absolute; top: 20px; left: 25px; font-size: 36px; color: white; text-decoration: none;">&times;</a>
+        <a href="#" onclick="showProducts('cats'); togglesidebar();" style="padding: 15px; text-decoration: none; font-size: 22px; color: #818181; display: block; transition: 0.3s; text-align: right;"> مستلزمات قطط </a>
+        <a href="#" onclick="showProducts('dogs'); togglesidebar();" style="padding: 15px; text-decoration: none; font-size: 22px; color: #818181; display: block; transition: 0.3s; text-align: right;">مستلزمات كلاب </a>
+        <a href="#" onclick="showProducts('chick'); togglesidebar();" style="padding: 15px; text-decoration: none; font-size: 22px; color: #818181; display: block; transition: 0.3s; text-align: right;"> مستلزمات كتاكيت </a>
+        <a href="#" onclick="showProducts('vaccine'); togglesidebar();" style="padding: 15px; text-decoration: none; font-size: 22px; color: #818181; display: block; transition: 0.3s; text-align: right;"> تطعيمات وتحصينات </a>
+    </div>
+
+    <div id="main" style="padding: 20px; text-align: center; transition: margin-right 0.5s;">
+    </div>
+
+    <script>
+        var productsDb = [];
+
+        function loadProductsFromJson() {
+            fetch('products.json')
+                .then(response => response.json())
+                .then(data => {
+                    productsDb = data;
+                    console.log("Success");
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+        }
+
+        loadProductsFromJson();
+
+        function togglesidebar() {
+            var sidebar = document.getElementById("mysidebar");
+            var mainContent = document.getElementById("main");
+            if (sidebar.style.width === "250px") {
+                sidebar.style.width = "0";
+                mainContent.style.marginRight = "0";
+            } else {
+                sidebar.style.width = "250px";
+                mainContent.style.marginRight = "250px";
+            }
+        }
+
+        function showProducts(chosenCategory) {
+            var mainContent = document.getElementById("main");
+            var cardHtml = "";
+            for (var i = 0; i < productsDb.length; i++) {
+                if (productsDb[i].category === chosenCategory) {
+                    cardHtml += `<div class="product-card" onclick="goToProductPage(${i})">`;
+                    cardHtml += `<img src="${productsDb[i].image}" style="width: 100%; height: 150px; object-fit: contain; border-radius: 4px;">`;
+                    cardHtml += `<h3 style="font-size: 18px; margin: 10px 0; color: #333;">${productsDb[i].name}</h3>`;
+                    cardHtml += `<p style="font-size: 14px; color: #666; margin: 5px 0;">الحجم :${productsDb[i].size}</p>`;
+                    if (productsDb[i].storage) {
+                        cardHtml += `<p style="font-size: 14px; color: #666; margin: 5px 0;">المساحة: ${productsDb[i].storage}</p>`;
+                    }
+                    if (productsDb[i].code) {
+                        cardHtml += `<p style="font-size: 14px; color: #666; margin: 5px 0;"> كود: ${productsDb[i].code}</p>`;
+                    }
+                    cardHtml += `<div style="font-size: 16px; font-weight: bold; color: #e44d26; margin-top: 10px;">${productsDb[i].price || '75 EPT'}</div>`;
+                    cardHtml += `</div>`;
+                }
+            }
+            mainContent.innerHTML = cardHtml;
+        }
+
+        function goToProductPage(index) {
+            window.location.href = "product.html?index=" + index;
+        }
+    </script>
+</body>
+
+</html>
