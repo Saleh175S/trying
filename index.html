@@ -88,18 +88,21 @@
         var productsDb = [];
 
         function loadProductsFromJson() {
-            fetch('products.json')
+            return fetch('products.json')
                 .then(response => response.json())
                 .then(data => {
                     productsDb = data;
-                    console.log("Success");
+                    console.log("Products Loaded Successfully");
                 })
                 .catch(error => {
-                    console.error("Error:", error);
+                    console.error("Error loading products:", error);
                 });
         }
 
-        loadProductsFromJson();
+        // نضمن تحميل المنتجات أولًا عند فتح الصفحة
+        window.onload = function() {
+            loadProductsFromJson();
+        };
 
         function togglesidebar() {
             var sidebar = document.getElementById("mysidebar");
@@ -114,6 +117,20 @@
         }
 
         function showProducts(chosenCategory) {
+            var mainContent = document.getElementById("main");
+            
+            // للتأكد من أن البيانات محملة بالكامل قبل الفلترة
+            if (productsDb.length === 0) {
+                mainContent.innerHTML = "<p style='color: #666;'>جاري تحميل المنتجات، يرجى الانتظار ثانية واحدة...</p>";
+                loadProductsFromJson().then(() => {
+                    renderProductsList(chosenCategory);
+                });
+            } else {
+                renderProductsList(chosenCategory);
+            }
+        }
+
+        function renderProductsList(chosenCategory) {
             var mainContent = document.getElementById("main");
             var cardHtml = "";
             for (var i = 0; i < productsDb.length; i++) {
@@ -132,7 +149,12 @@
                     cardHtml += `</div>`;
                 }
             }
-            mainContent.innerHTML = cardHtml;
+            
+            if (cardHtml === "") {
+                mainContent.innerHTML = "<p style='color: #666;'>لا توجد منتجات متوفرة في هذا القسم حاليًا.</p>";
+            } else {
+                mainContent.innerHTML = cardHtml;
+            }
         }
 
         function goToProductPage(index) {
@@ -141,5 +163,5 @@
     </script>
 </body>
 
-            </html>
-            
+    </html>
+    
